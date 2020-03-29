@@ -4,39 +4,10 @@ import logging
 import numpy as np
 from matplotlib import pyplot as plt
 
-
-BRIGHT_QUBITS_DATASETS = [
-    '../data/processed/Data4Jens/BrightTimeTagSet1.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet2.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet3.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet4.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet5.csv',
-]
-
-DARK_QUBITS_DATASETS = [
-    '../data/processed/Data4Jens/DarkTimeTagSet1.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet2.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet3.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet4.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet5.csv',
-]
-
+from features.build_features import *
 
 def use_ramdisk(filenames):
     return list(map(lambda filename: "/Volumes/ramdisk/" + filename, filenames))
-
-
-def load_datasets(filenames):
-    qubits_measurements = []
-    for dataset_filename in filenames:
-        with open(dataset_filename, 'r') as dataset_file:
-            logging.info("Loading {}".format(dataset_filename))
-            csv_reader = csv.reader(dataset_file)
-            for line in csv_reader:
-                qubits_measurements.extend(
-                    list(map(lambda timestamp: float(timestamp), line)))
-    return qubits_measurements
-
 
 def draw_plot(qubits_measurements):
     logging.info("Plotting histogram graph.")

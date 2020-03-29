@@ -12,22 +12,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 
-
-BRIGHT_QUBITS_DATASETS = [
-    '../data/processed/Data4Jens/BrightTimeTagSet1.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet2.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet3.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet4.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet5.csv',
-]
-
-DARK_QUBITS_DATASETS = [
-    '../data/processed/Data4Jens/DarkTimeTagSet1.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet2.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet3.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet4.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet5.csv',
-]
+from features.build_features import *
 
 
 def picklize(db_id, overwrite=False):
@@ -49,27 +34,6 @@ def picklize(db_id, overwrite=False):
         return wrapper
     return decorator
 
-
-# Load datasets
-def load_datasets():
-    def load_datasets_with_ground_truth(qubits_datasets, ground_truth):
-        qubits_measurements = []
-        for dataset_filename in qubits_datasets:
-            with open(dataset_filename, 'r') as dataset_file:
-                logging.info("Loading {}".format(dataset_filename))
-                csv_reader = csv.reader(dataset_file)
-                for line in csv_reader:
-                    qubits_measurements.append(
-                        np.array(list(map(lambda timestamp: float(timestamp), line)))
-                    )
-        qubits_ground_truths = [ground_truth for i in range(len(qubits_measurements))]
-        return qubits_measurements, qubits_ground_truths
-    
-    bright_qubits_measurements, bright_qubits_ground_truths = load_datasets_with_ground_truth(BRIGHT_QUBITS_DATASETS, 0)
-    dark_qubits_measurements, dark_qubits_ground_truths = load_datasets_with_ground_truth(DARK_QUBITS_DATASETS, 1)
-    return (
-        (bright_qubits_measurements + dark_qubits_measurements), 
-        (bright_qubits_ground_truths + dark_qubits_ground_truths))
 
 RANDOM_SEED = 42
 
@@ -268,7 +232,7 @@ def majority_vote_grid_search_cv(qubits_measurements_train, qubits_truths_train,
 
 # Main Tasks
 def run_mlp_classifier_in_paper():
-    qubits_measurements, qubits_truths = load_datasets()
+    qubits_measurements, qubits_truths = load_datasets2()
     qubits_measurements_train, qubits_measurements_test, qubits_truths_train, qubits_truths_test = \
         train_test_split(qubits_measurements, qubits_truths, test_size=0.20, random_state=42)
 
@@ -285,7 +249,7 @@ def run_mlp_classifier_in_paper():
 
 
 def run_mlp_grid_search_cv():
-    qubits_measurements, qubits_truths = load_datasets()
+    qubits_measurements, qubits_truths = load_datasets2()
     qubits_measurements_train, qubits_measurements_test, qubits_truths_train, qubits_truths_test = \
         train_test_split(qubits_measurements, qubits_truths, test_size=0.20, random_state=42)
         
@@ -305,7 +269,7 @@ def run_mlp_with_kfold_data_split():
     (32 neurons per layer, 2 layers, photons cutoff at BEST_ARRIVAL_TIME_THRESHOLD)
     This is the model presented on 01/30/2020 meeting
     """
-    qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets()))
+    qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets2()))
 
     kf = KFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
     clf_accuracies = []
@@ -337,7 +301,7 @@ def run_mlp_grid_search_cv_with_kfold_data_split(num_layers=2):
     In each fold of the 5-fold training/testing data split, grid search for the best params in MLPClassifier
     and get the average accuracy
     """
-    qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets()))
+    qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets2()))
 
     kf = KFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
     clf_accuracies = []
@@ -376,7 +340,7 @@ def run_mlp_with_cross_validation_average():
     """
     logging.info("Starting MLPClassifier testing with Cross Validation Method.")
 
-    qubits_measurements, qubits_truths = load_datasets()
+    qubits_measurements, qubits_truths = load_datasets2()
 
     mlp_pipeline = Pipeline([
             ('hstgm', Histogramize(num_buckets=11, arrival_time_threshold=(PRE_ARRIVAL_TIME_THRESHOLD, POST_ARRIVAL_TIME_THRESHOLD))),
@@ -404,7 +368,7 @@ def run_mlp_grid_search_cv_with_cross_validation_average():
     """
     logging.info("Starting MLPClassifier Grid Search with Cross Validation Method.")
 
-    qubits_measurements, qubits_truths = load_datasets()
+    qubits_measurements, qubits_truths = load_datasets2()
 
     # construct iterator for training/testing dataset split
     # evenly distribute qubits with a certain number of photons captured
@@ -430,7 +394,7 @@ def run_logistic_regression_with_kfold_data_split():
     Logistic Regression with the best parameters found before, using 5-fold data split
     Mostly concerned with the falsely-classified instances fed to further analysis
     """
-    qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets()))
+    qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets2()))
 
     kf = KFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
     clf_accuracies = []
@@ -458,7 +422,7 @@ def run_logistic_regression_with_kfold_data_split():
 
 
 def run_logistic_regression_grid_search_cv():
-    qubits_measurements, qubits_truths = load_datasets()
+    qubits_measurements, qubits_truths = load_datasets2()
     qubits_measurements_train, qubits_measurements_test, qubits_truths_train, qubits_truths_test = \
         train_test_split(qubits_measurements, qubits_truths, test_size=0.20, random_state=42)
 
@@ -475,7 +439,7 @@ def run_random_forest_with_kfold_data_split():
     Random forest with the best parameters found before (currently no parameter), using 5-fold data split
     Mostly concerned with the falsely-classified instances fed to further analysis
     """
-    qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets()))
+    qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets2()))
 
     kf = KFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
     clf_accuracies = []
@@ -503,7 +467,7 @@ def run_random_forest_with_kfold_data_split():
 
 
 def run_random_forest_grid_search_cv():
-    qubits_measurements, qubits_truths = load_datasets()
+    qubits_measurements, qubits_truths = load_datasets2()
     qubits_measurements_train, qubits_measurements_test, qubits_truths_train, qubits_truths_test = \
         train_test_split(qubits_measurements, qubits_truths, test_size=0.20, random_state=42)
         
@@ -521,7 +485,7 @@ def run_majority_vote_with_kfold_data_split():
     perform Majority Vote classification on each set, and report
     the average accuracy across the 5 folds.
     """
-    qubits_measurements, qubits_truths = load_datasets()
+    qubits_measurements, qubits_truths = load_datasets2()
     qubits_measurements = np.array(qubits_measurements)
     qubits_truths = np.array(qubits_truths)
 
@@ -556,7 +520,7 @@ def run_majority_vote_with_kfold_data_split():
 def run_majority_vote_grid_search_cv_with_cross_validation_average():
     logging.info("Starting Voting Classifier Grid Search with Cross Validation Method.")
 
-    qubits_measurements, qubits_truths = load_datasets()
+    qubits_measurements, qubits_truths = load_datasets2()
 
     # construct iterator for training/testing dataset split
     # evenly distribute qubits with a certain number of photons captured
@@ -584,7 +548,7 @@ def run_threshold_cutoff():
     """
     logging.info("Starting Threshold Cutoff Classifier.")
     
-    qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets()))
+    qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets2()))
     
     # Data split
     kf = KFold(n_splits=5, shuffle=False)

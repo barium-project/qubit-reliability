@@ -1,5 +1,4 @@
 import argparse
-from enum import Enum
 import csv
 import logging
 from abc import ABC, abstractmethod
@@ -7,36 +6,10 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Assume the given files are compiled by the ground truth (if the measured qubit is dark or bright)
-BRIGHT_QUBITS_MEASUREMENTS = [
-    '../data/processed/Data4Jens/BrightTimeTagSet1.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet2.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet3.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet4.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet5.csv',
-]
+from features.build_features import *
 
-DARK_QUBITS_MEASUREMENTS = [
-    '../data/processed/Data4Jens/DarkTimeTagSet1.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet2.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet3.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet4.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet5.csv',
-]
 
 BEST_RELIABILITY_ACHIEVED = 0.9997081106493118
-
-class Qubit(Enum):
-    BRIGHT = 0
-    DARK = 1
-
-
-class QubitMeasurement():
-    def __init__(self, photons, ground_truth):
-        super().__init__()
-        self.photons = photons
-        self.ground_truth = ground_truth
-        self.classified_result = None
 
 
 class ClassificationModel(ABC):
@@ -78,22 +51,6 @@ class ThresholdCutoffEarlyArrivalModel(ClassificationModel):
 def get_arguments():
     parser = argparse.ArgumentParser()
     return parser.parse_args
-
-
-def read_qubit_measurements():
-    def read_from_files_with_ground_truth(filenames, ground_truth, qubit_measurements):
-        for measurement_filename in filenames:
-            logging.info("Loading {}".format(measurement_filename))
-            with open(measurement_filename, 'r') as measurement_file:
-                reader = csv.reader(measurement_file)
-                for photons in reader:
-                    qubit_measurements.append(QubitMeasurement([float(photon) for photon in photons], ground_truth))
-        return qubit_measurements
-
-    qubit_measurements = []
-    read_from_files_with_ground_truth(BRIGHT_QUBITS_MEASUREMENTS, Qubit.BRIGHT, qubit_measurements)
-    read_from_files_with_ground_truth(DARK_QUBITS_MEASUREMENTS, Qubit.DARK, qubit_measurements)
-    return qubit_measurements
 
 
 def classify_qubits(model, qubit_measurements):

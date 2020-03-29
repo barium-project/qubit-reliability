@@ -4,53 +4,10 @@ import logging
 from collections import defaultdict
 from matplotlib import pyplot as plt
 
+from features.build_features import *
 
-BRIGHT_QUBITS_DATASETS = [
-    '../data/processed/Data4Jens/BrightTimeTagSet1.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet2.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet3.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet4.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet5.csv',
-]
-
-DARK_QUBITS_DATASETS = [
-    '../data/processed/Data4Jens/DarkTimeTagSet1.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet2.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet3.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet4.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet5.csv',
-]
 
 MOST_NUMBER_OF_PHOTONS_CAPTURED = 77
-
-
-def load_datasets():
-    qubits_measurements = []
-    for dataset_filename in BRIGHT_QUBITS_DATASETS + DARK_QUBITS_DATASETS:
-        with open(dataset_filename, 'r') as dataset_file:
-            logging.info("Loading {}".format(dataset_filename))
-            csv_reader = csv.reader(dataset_file)
-            for line in csv_reader:
-                qubits_measurements.append(
-                    list(map(lambda timestamp: float(timestamp), line)))
-    return qubits_measurements
-
-
-def load_classifier_test_results(filenames):
-    fp_instances = []  # false positives
-    fn_instances = []  # false negatives
-    for result_filename in filenames:
-        with open(result_filename, 'r') as result_file:
-            logging.info("Loading {}".format(result_filename))
-            csv_reader = csv.reader(result_file)
-            for line in csv_reader:
-                if line[0] == 'FALSE_POSITIVE':
-                    fp_instances.append(
-                        list(map(lambda timestamp: float(timestamp), line[1:])))
-                if line[0] == 'FALSE_NEGATIVE':
-                    fn_instances.append(
-                        list(map(lambda timestamp: float(timestamp), line[1:])))
-    return fp_instances, fn_instances
 
 
 def find_instances_indices(dataset, instances):

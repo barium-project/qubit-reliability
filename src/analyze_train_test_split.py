@@ -7,46 +7,10 @@ from matplotlib import pyplot as plt
 from matplotlib.pyplot import subplots_adjust
 from sklearn.model_selection import  KFold, StratifiedKFold, train_test_split
 
-
-BRIGHT_QUBITS_DATASETS = [
-    '../data/processed/Data4Jens/BrightTimeTagSet1.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet2.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet3.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet4.csv',
-    '../data/processed/Data4Jens/BrightTimeTagSet5.csv',
-]
-
-DARK_QUBITS_DATASETS = [
-    '../data/processed/Data4Jens/DarkTimeTagSet1.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet2.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet3.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet4.csv',
-    '../data/processed/Data4Jens/DarkTimeTagSet5.csv',
-]
+from features.build_features import *
 
 
 RANDOM_SEED = 42
-
-
-def load_datasets():
-    def load_datasets_with_ground_truth(qubits_datasets, ground_truth):
-        qubits_measurements = []
-        for dataset_filename in qubits_datasets:
-            with open(dataset_filename, 'r') as dataset_file:
-                logging.info("Loading {}".format(dataset_filename))
-                csv_reader = csv.reader(dataset_file)
-                for line in csv_reader:
-                    qubits_measurements.append(
-                        np.array(list(map(lambda timestamp: float(timestamp), line)))
-                    )
-        qubits_ground_truths = [ground_truth for i in range(len(qubits_measurements))]
-        return qubits_measurements, qubits_ground_truths
-    
-    bright_qubits_measurements, bright_qubits_ground_truths = load_datasets_with_ground_truth(BRIGHT_QUBITS_DATASETS, 0)
-    dark_qubits_measurements, dark_qubits_ground_truths = load_datasets_with_ground_truth(DARK_QUBITS_DATASETS, 1)
-    return (
-        (bright_qubits_measurements + dark_qubits_measurements), 
-        (bright_qubits_ground_truths + dark_qubits_ground_truths))
 
 
 def draw_photon_histogram_plot(qubits_measurements, qubits_truths, split_indicies):
@@ -222,7 +186,7 @@ def draw_photon_count_frequency_plot_split_by_truth(qubits_measurements, qubits_
     plt.show()
 
 if __name__ == '__main__':
-    qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets()))
+    qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets2()))
 
     # "Just-kidding" Split
     # draw_photon_count_frequency_plot_split_by_truth(qubits_measurements, qubits_truths, 
