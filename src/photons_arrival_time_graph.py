@@ -1,10 +1,8 @@
 from os import sys
 import csv
+import logging
 import numpy as np
 from matplotlib import pyplot as plt
-
-def log(message):
-    print(message, file=sys.stderr)
 
 
 BRIGHT_QUBITS_DATASETS = [
@@ -32,7 +30,7 @@ def load_datasets(filenames):
     qubits_measurements = []
     for dataset_filename in filenames:
         with open(dataset_filename, 'r') as dataset_file:
-            log("Loading {}".format(dataset_filename))
+            logging.info("Loading {}".format(dataset_filename))
             csv_reader = csv.reader(dataset_file)
             for line in csv_reader:
                 qubits_measurements.extend(
@@ -41,7 +39,7 @@ def load_datasets(filenames):
 
 
 def draw_plot(qubits_measurements):
-    log("Plotting histogram graph.")
+    logging.info("Plotting histogram graph.")
     fig, ax = plt.subplots()
     ax.set_title("Distribution of Photons' Arrival Times")
     ax.set_xlabel("Time")
@@ -59,4 +57,4 @@ if __name__ == '__main__':
     #     'Results/falsely-classified-instances-mlp-lg-rf/false_negative_instances.csv'
     # ])
     draw_plot(qubits_measurements)
-    log("Done.")
+    logging.info("Done.")

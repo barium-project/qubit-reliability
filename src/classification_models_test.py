@@ -1,6 +1,7 @@
 import argparse
 from enum import Enum
 import csv
+import logging
 from abc import ABC, abstractmethod
 import sys
 import numpy as np
@@ -79,15 +80,10 @@ def get_arguments():
     return parser.parse_args
 
 
-def log(message):
-    # sys.stderr.write(message + '\n')
-    print(message, file=sys.stderr)
-
-
 def read_qubit_measurements():
     def read_from_files_with_ground_truth(filenames, ground_truth, qubit_measurements):
         for measurement_filename in filenames:
-            log("Loading {}".format(measurement_filename))
+            logging.info("Loading {}".format(measurement_filename))
             with open(measurement_filename, 'r') as measurement_file:
                 reader = csv.reader(measurement_file)
                 for photons in reader:
@@ -101,7 +97,7 @@ def read_qubit_measurements():
 
 
 def classify_qubits(model, qubit_measurements):
-    log("Classifying qubit measurements with {}".format(model))
+    logging.info("Classifying qubit measurements with {}".format(model))
     for measurement in qubit_measurements:
         measurement.classified_result = model.classify(measurement)
     return
@@ -191,12 +187,12 @@ def threshold_cutoff_early_arrival_experiments():
         _latest_photon_arrival_time = max(list(map(
             lambda measurement: max(measurement.photons) if len(measurement.photons) > 0 else 0, 
             qubit_measurements)))
-        log("Latest photon arrival time among all measurements: {}".format(_latest_photon_arrival_time))
+        logging.info("Latest photon arrival time among all measurements: {}".format(_latest_photon_arrival_time))
 
         for arrival_time_threshold in np.arange(_latest_photon_arrival_time, 0, -0.0001):
             for number_threshold in range(1, 41):  # thresholds that achieve reliability > 70% without early arrival model
                 model = ThresholdCutoffEarlyArrivalModel(number_threshold, arrival_time_threshold)
-                log("Testing {}".format(model))
+                logging.info("Testing {}".format(model))
                 classify_qubits(model, qubit_measurements)
                 reliability, false_positives, false_negatives = gather_measurement_statistics(qubit_measurements)
 

@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import csv
+import logging
 import pickle
 from os import path, sys
 from sklearn.base import BaseEstimator, TransformerMixin, ClassifierMixin
@@ -29,11 +30,6 @@ DARK_QUBITS_DATASETS = [
 ]
 
 
-def log(message):
-    # sys.stderr.write(message + '\n')
-    print(message, file=sys.stderr)
-
-
 def picklize(db_id, overwrite=False):
     def decorator(function):
         def wrapper(*args, **kwargs):
@@ -42,7 +38,7 @@ def picklize(db_id, overwrite=False):
 
             db_filename = _pickle_db_path(db_id)
             if (not overwrite) and path.exists(db_filename):
-                log("Pickle: Loading from database {}".format(db_filename))
+                logging.info("Pickle: Loading from database {}".format(db_filename))
                 with open(db_filename, 'rb') as db_file:
                     return pickle.load(db_file)
             else:
@@ -60,7 +56,7 @@ def load_datasets():
         qubits_measurements = []
         for dataset_filename in qubits_datasets:
             with open(dataset_filename, 'r') as dataset_file:
-                log("Loading {}".format(dataset_filename))
+                logging.info("Loading {}".format(dataset_filename))
                 csv_reader = csv.reader(dataset_file)
                 for line in csv_reader:
                     qubits_measurements.append(
@@ -119,7 +115,7 @@ class ThresholdCutoffClassifier(BaseEstimator, ClassifierMixin):
 
 
 def classifier_train(classifier, qubits_measurements_train, qubits_truths_train):
-    log("Training Classifier: {}".format(classifier))
+    logging.info("Training Classifier: {}".format(classifier))
     classifier.fit(qubits_measurements_train, qubits_truths_train)
     return classifier
 
@@ -130,7 +126,7 @@ CLASSIFIER_TEST_OUTPUT_FILENAME_BASE = 'classifier_test_result'
 def classifier_test(classifier, qubits_measurements_train, qubits_measurements_test, 
         qubits_truths_train, qubits_truths_test, test_training=False):
     global _classifier_test_counter
-    log("Testing classifier: {}".format(classifier))
+    logging.info("Testing classifier: {}".format(classifier))
 
     if test_training:
         qubits_predict_train = classifier.predict(qubits_measurements_train)
@@ -171,7 +167,7 @@ def classifier_test(classifier, qubits_measurements_train, qubits_measurements_t
             csv_writer.writerow(["FALSE_NEGATIVE"] + list(instance))
 
     _classifier_test_counter += 1
-    log("Falsely-classified instances written to the report file.")
+    logging.info("Falsely-classified instances written to the report file.")
 
     return accuracy_score(qubits_truths_test, qubits_predict_test)
 
@@ -180,7 +176,7 @@ def classifier_test(classifier, qubits_measurements_train, qubits_measurements_t
 def mlp_grid_search_cv(qubits_measurements_train, qubits_truths_train, **kwargs):
     cv = kwargs['cv'] if 'cv' in kwargs else 4
 
-    log("Starting Grid Search with Cross Validation on MLP Classifier.")
+    logging.info("Starting Grid Search with Cross Validation on MLP Classifier.")
     
     mlp_pipeline = Pipeline([
         # ('hstgm', Histogramize(num_buckets=6)),
@@ -204,7 +200,7 @@ def mlp_grid_search_cv(qubits_measurements_train, qubits_truths_train, **kwargs)
 
 # Logistic Regression
 def logistic_regression_grid_search_cv(qubits_measurements_train, qubits_truths_train):
-    log("Starting Grid Search with Cross Validation on Logistic Regression models.")
+    logging.info("Starting Grid Search with Cross Validation on Logistic Regression models.")
 
     lg_pipeline = Pipeline([
         ('hstgm', Histogramize(num_buckets=6)),
@@ -224,7 +220,7 @@ def logistic_regression_grid_search_cv(qubits_measurements_train, qubits_truths_
 
 # Random Forest
 def random_forest_grid_search_cv(qubits_measurements_train, qubits_truths_train):
-    log("Starting Grid Search with Cross Validation on Random Forest Classifier.")
+    logging.info("Starting Grid Search with Cross Validation on Random Forest Classifier.")
     
     rf_pipeline = Pipeline([
         ('hstgm', Histogramize(num_buckets=6)),
@@ -241,9 +237,9 @@ def random_forest_grid_search_cv(qubits_measurements_train, qubits_truths_train)
 # Majority Vote with improved Feed-forward Neural Network
 def majority_vote_grid_search_cv(qubits_measurements_train, qubits_truths_train, **kwargs):
     cv = kwargs['cv'] if 'cv' in kwargs else 4
-    log(cv)
+    logging.info(cv)
 
-    log("Starting Grid Search with Cross Validation on Majority Vote Classifier.")
+    logging.info("Starting Grid Search with Cross Validation on Majority Vote Classifier.")
 
     mv_pipeline = Pipeline([
         ('hstgm', Histogramize(
@@ -276,7 +272,7 @@ def run_mlp_classifier_in_paper():
     qubits_measurements_train, qubits_measurements_test, qubits_truths_train, qubits_truths_test = \
         train_test_split(qubits_measurements, qubits_truths, test_size=0.20, random_state=42)
 
-    log("Histogramizing training and testing data.")
+    logging.info("Histogramizing training and testing data.")
     histogramizer = Histogramize(num_buckets=6)
     qubits_measurements_train_histogram = histogramizer.transform(qubits_measurements_train)
     qubits_measurements_test_histogram = histogramizer.transform(qubits_measurements_test)
@@ -295,7 +291,7 @@ def run_mlp_grid_search_cv():
         
     mlp_grid = picklize('mlp_grid_search_cv') \
         (mlp_grid_search_cv)(qubits_measurements_train, qubits_truths_train)
-    log(pd.DataFrame(mlp_grid.cv_results_))
+    logging.info(pd.DataFrame(mlp_grid.cv_results_))
     print("Best parameters found in Grid Search:")
     print(mlp_grid.best_params_)
 
@@ -316,7 +312,7 @@ def run_mlp_with_kfold_data_split():
     _i_fold = 0
     for train_index, test_index in kf.split(qubits_measurements):
         _i_fold += 1
-        log("Train/Test data split {fold}-th fold.".format(fold=_i_fold))
+        logging.info("Train/Test data split {fold}-th fold.".format(fold=_i_fold))
 
         qubits_measurements_train, qubits_measurements_test, qubits_truths_train, qubits_truths_test = \
             qubits_measurements[train_index], qubits_measurements[test_index], \
@@ -348,7 +344,7 @@ def run_mlp_grid_search_cv_with_kfold_data_split(num_layers=2):
     _i_fold = 0
     for train_index, test_index in kf.split(qubits_measurements):
         _i_fold += 1
-        log("Train/Test data split {fold}-th fold.".format(fold=_i_fold))
+        logging.info("Train/Test data split {fold}-th fold.".format(fold=_i_fold))
 
         qubits_measurements_train, qubits_measurements_test, qubits_truths_train, qubits_truths_test = \
             qubits_measurements[train_index], qubits_measurements[test_index], \
@@ -378,7 +374,7 @@ def run_mlp_with_cross_validation_average():
     Run the best model gotten from "run_mlp" by cross validation method only.
     Training on 80% of the dataset and testing on 20% of the dataset 5 times, and take average of the accuracy
     """
-    log("Starting MLPClassifier testing with Cross Validation Method.")
+    logging.info("Starting MLPClassifier testing with Cross Validation Method.")
 
     qubits_measurements, qubits_truths = load_datasets()
 
@@ -406,7 +402,7 @@ def run_mlp_grid_search_cv_with_cross_validation_average():
     Run MLPClassifier with params Grid Search, 
     using the Cross Validation Method without splitting training/testing set beforehand
     """
-    log("Starting MLPClassifier Grid Search with Cross Validation Method.")
+    logging.info("Starting MLPClassifier Grid Search with Cross Validation Method.")
 
     qubits_measurements, qubits_truths = load_datasets()
 
@@ -421,7 +417,7 @@ def run_mlp_grid_search_cv_with_cross_validation_average():
 
     mlp_grid = picklize('mlp_grid_search_cv_cv_average') \
         (mlp_grid_search_cv)(qubits_measurements, qubits_truths, cv=list(cv_indices))
-    log(mlp_grid.cv_results_)
+    logging.info(mlp_grid.cv_results_)
 
     best_accuracy = max(list(mlp_grid.cv_results_['mean_test_score']))
     print("Best parameters found in Grid Search:")
@@ -441,7 +437,7 @@ def run_logistic_regression_with_kfold_data_split():
     _i_fold = 0
     for train_index, test_index in kf.split(qubits_measurements):
         _i_fold += 1
-        log("Train/Test data split {fold}-th fold.".format(fold=_i_fold))
+        logging.info("Train/Test data split {fold}-th fold.".format(fold=_i_fold))
 
         qubits_measurements_train, qubits_measurements_test, qubits_truths_train, qubits_truths_test = \
             qubits_measurements[train_index], qubits_measurements[test_index], \
@@ -486,7 +482,7 @@ def run_random_forest_with_kfold_data_split():
     _i_fold = 0
     for train_index, test_index in kf.split(qubits_measurements):
         _i_fold += 1
-        log("Train/Test data split {fold}-th fold.".format(fold=_i_fold))
+        logging.info("Train/Test data split {fold}-th fold.".format(fold=_i_fold))
 
         qubits_measurements_train, qubits_measurements_test, qubits_truths_train, qubits_truths_test = \
             qubits_measurements[train_index], qubits_measurements[test_index], \
@@ -513,7 +509,7 @@ def run_random_forest_grid_search_cv():
         
     rf_grid = picklize('random_forest_grid_search_cv') \
         (random_forest_grid_search_cv)(qubits_measurements_train, qubits_truths_train)
-    log(pd.DataFrame(rf_grid.cv_results_))
+    logging.info(pd.DataFrame(rf_grid.cv_results_))
 
     classifier_test(rf_grid, qubits_measurements_train, qubits_measurements_test, 
         qubits_truths_train, qubits_truths_test)
@@ -534,7 +530,7 @@ def run_majority_vote_with_kfold_data_split():
     _i_fold = 0
     for train_index, test_index in kf.split(qubits_measurements):
         _i_fold += 1
-        log("Train/Test data split {fold}-th fold.".format(fold=_i_fold))
+        logging.info("Train/Test data split {fold}-th fold.".format(fold=_i_fold))
 
         qubits_measurements_train, qubits_measurements_test, qubits_truths_train, qubits_truths_test = \
             qubits_measurements[train_index], qubits_measurements[test_index], \
@@ -558,7 +554,7 @@ def run_majority_vote_with_kfold_data_split():
     
 
 def run_majority_vote_grid_search_cv_with_cross_validation_average():
-    log("Starting Voting Classifier Grid Search with Cross Validation Method.")
+    logging.info("Starting Voting Classifier Grid Search with Cross Validation Method.")
 
     qubits_measurements, qubits_truths = load_datasets()
 
@@ -573,7 +569,7 @@ def run_majority_vote_grid_search_cv_with_cross_validation_average():
 
     mv_grid = picklize('majority_vote_grid_search_cv_cv_average') \
         (majority_vote_grid_search_cv)(qubits_measurements, qubits_truths, cv=list(cv_indices))
-    log(mv_grid.cv_results_)
+    logging.info(mv_grid.cv_results_)
 
     best_accuracy = max(list(mv_grid.cv_results_['mean_test_score']))
     print("Best parameters found in Grid Search:")
@@ -586,7 +582,7 @@ def run_threshold_cutoff():
     A toy data spliter is used primarily to show that a very high (99.975461%) but misleading accuracy
     can be achieved with bad training/testing split
     """
-    log("Starting Threshold Cutoff Classifier.")
+    logging.info("Starting Threshold Cutoff Classifier.")
     
     qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets()))
     
@@ -619,4 +615,4 @@ if __name__ == '__main__':
     # run_majority_vote_with_kfold_data_split()
     run_majority_vote_grid_search_cv_with_cross_validation_average()
     # run_threshold_cutoff()
-    log("Done.")
+    logging.info("Done.")

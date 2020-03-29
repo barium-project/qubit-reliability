@@ -1,10 +1,8 @@
 from os import sys
 import csv
+import logging
 from collections import defaultdict
 from matplotlib import pyplot as plt
-
-def log(message):
-    print(message, file=sys.stderr)
 
 
 BRIGHT_QUBITS_DATASETS = [
@@ -30,7 +28,7 @@ def load_datasets():
     qubits_measurements = []
     for dataset_filename in BRIGHT_QUBITS_DATASETS + DARK_QUBITS_DATASETS:
         with open(dataset_filename, 'r') as dataset_file:
-            log("Loading {}".format(dataset_filename))
+            logging.info("Loading {}".format(dataset_filename))
             csv_reader = csv.reader(dataset_file)
             for line in csv_reader:
                 qubits_measurements.append(
@@ -43,7 +41,7 @@ def load_classifier_test_results(filenames):
     fn_instances = []  # false negatives
     for result_filename in filenames:
         with open(result_filename, 'r') as result_file:
-            log("Loading {}".format(result_filename))
+            logging.info("Loading {}".format(result_filename))
             csv_reader = csv.reader(result_file)
             for line in csv_reader:
                 if line[0] == 'FALSE_POSITIVE':
@@ -70,7 +68,7 @@ def find_instances_indices(dataset, instances):
                     return index
         raise ValueError('No index found.')
 
-    log("Mapping instances to indices in the dataset.")
+    logging.info("Mapping instances to indices in the dataset.")
     # return list(map(lambda instance: index_approximate(dataset, instance), instances))
     return list(map(lambda instance: dataset.index(instance), instances))
 
@@ -86,7 +84,7 @@ def write_instances_to_file(dataset, fp_indices, fn_indices):
 
 
 def draw_plot_misclassified_indices(fp_indices, fn_indices):
-    log("Plotting instances frequency plot.")
+    logging.info("Plotting instances frequency plot.")
     fp_index_frequency = defaultdict(int)
     fn_index_frequency = defaultdict(int)
     for index in fp_indices:
@@ -164,4 +162,4 @@ if __name__ == '__main__':
     draw_plot_misclassified_indices(fp_indices, fn_indices)
     draw_plot_photons_count(fp_instances, fn_instances)
     # write_instances_to_file(dataset, fp_indices, fn_indices)
-    log("Done.")
+    logging.info("Done.")

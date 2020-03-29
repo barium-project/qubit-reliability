@@ -1,14 +1,11 @@
 from os import sys
 import csv
+import logging
 from collections import defaultdict
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.pyplot import subplots_adjust
 from sklearn.model_selection import  KFold, StratifiedKFold, train_test_split
-
-
-def log(message):
-    print(message, file=sys.stderr)
 
 
 BRIGHT_QUBITS_DATASETS = [
@@ -36,7 +33,7 @@ def load_datasets():
         qubits_measurements = []
         for dataset_filename in qubits_datasets:
             with open(dataset_filename, 'r') as dataset_file:
-                log("Loading {}".format(dataset_filename))
+                logging.info("Loading {}".format(dataset_filename))
                 csv_reader = csv.reader(dataset_file)
                 for line in csv_reader:
                     qubits_measurements.append(
@@ -53,14 +50,14 @@ def load_datasets():
 
 
 def draw_photon_histogram_plot(qubits_measurements, qubits_truths, split_indicies):
-    log("Plotting photons arrival time histograms of data split.")
+    logging.info("Plotting photons arrival time histograms of data split.")
 
     fig = plt.figure()
     fig.suptitle("Photons' Arrival Times Histogram of Each Training/Testing Set")
     n_splits = len(split_indicies)
     _i = 0
     for train_index, test_index in split_indicies:
-        log("Plotting histogram at {i}-th fold.".format(i=_i+1))
+        logging.info("Plotting histogram at {i}-th fold.".format(i=_i+1))
 
         qubits_measurements_train, qubits_measurements_test = \
             qubits_measurements[train_index], qubits_measurements[test_index]
@@ -93,14 +90,14 @@ def draw_photon_histogram_plot(qubits_measurements, qubits_truths, split_indicie
 MOST_NUMBER_OF_PHOTONS_CAPTURED = 77
 
 def draw_photon_count_frequency_plot(qubits_measurements, qubits_truths, split_indicies):
-    log("Plotting frequency bar charts by number of photons captured.")
+    logging.info("Plotting frequency bar charts by number of photons captured.")
 
     fig = plt.figure()
     fig.suptitle("Qubits Count per Number of Photons Captured of Each Training/Testing Set")
     n_splits = len(split_indicies)
     _i = 0
     for train_index, test_index in split_indicies:
-        log("Plotting bar chart at {i}-th fold.".format(i=_i+1))
+        logging.info("Plotting bar chart at {i}-th fold.".format(i=_i+1))
 
         qubits_measurements_train, qubits_measurements_test = \
             qubits_measurements[train_index], qubits_measurements[test_index]
@@ -142,7 +139,7 @@ def draw_photon_count_frequency_plot(qubits_measurements, qubits_truths, split_i
 
 
 def draw_photon_count_frequency_plot_split_by_truth(qubits_measurements, qubits_truths, split_indicies):
-    log("Plotting frequency bar charts by number of photons captured (split by ground truth).")
+    logging.info("Plotting frequency bar charts by number of photons captured (split by ground truth).")
 
     fig = plt.figure()
     fig.suptitle("Qubits Count per Number of Photons Captured of Training/Testing Set")
@@ -254,4 +251,4 @@ if __name__ == '__main__':
     # draw_photon_count_frequency_plot_split_by_truth(qubits_measurements, qubits_truths, 
     #     list(kf.split(qubits_measurements, qubits_class))) 
 
-    log("Done.")
+    logging.info("Done.")
