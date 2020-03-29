@@ -9,5 +9,4 @@ __pycache__
 ~$*
 
 data/processed
-pickle_data
-classifier_test_result*
+data/interim

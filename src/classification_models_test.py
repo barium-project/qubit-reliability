@@ -8,19 +8,19 @@ import matplotlib.pyplot as plt
 
 # Assume the given files are compiled by the ground truth (if the measured qubit is dark or bright)
 BRIGHT_QUBITS_MEASUREMENTS = [
-    'Data4Jens/BrightTimeTagSet1.csv',
-    'Data4Jens/BrightTimeTagSet2.csv',
-    'Data4Jens/BrightTimeTagSet3.csv',
-    'Data4Jens/BrightTimeTagSet4.csv',
-    'Data4Jens/BrightTimeTagSet5.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet1.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet2.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet3.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet4.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet5.csv',
 ]
 
 DARK_QUBITS_MEASUREMENTS = [
-    'Data4Jens/DarkTimeTagSet1.csv',
-    'Data4Jens/DarkTimeTagSet2.csv',
-    'Data4Jens/DarkTimeTagSet3.csv',
-    'Data4Jens/DarkTimeTagSet4.csv',
-    'Data4Jens/DarkTimeTagSet5.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet1.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet2.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet3.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet4.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet5.csv',
 ]
 
 BEST_RELIABILITY_ACHIEVED = 0.9997081106493118

@@ -12,19 +12,19 @@ def log(message):
 
 
 BRIGHT_QUBITS_DATASETS = [
-    'Data4Jens/BrightTimeTagSet1.csv',
-    'Data4Jens/BrightTimeTagSet2.csv',
-    'Data4Jens/BrightTimeTagSet3.csv',
-    'Data4Jens/BrightTimeTagSet4.csv',
-    'Data4Jens/BrightTimeTagSet5.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet1.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet2.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet3.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet4.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet5.csv',
 ]
 
 DARK_QUBITS_DATASETS = [
-    'Data4Jens/DarkTimeTagSet1.csv',
-    'Data4Jens/DarkTimeTagSet2.csv',
-    'Data4Jens/DarkTimeTagSet3.csv',
-    'Data4Jens/DarkTimeTagSet4.csv',
-    'Data4Jens/DarkTimeTagSet5.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet1.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet2.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet3.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet4.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet5.csv',
 ]
 
 

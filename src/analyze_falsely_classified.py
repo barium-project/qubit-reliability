@@ -8,19 +8,19 @@ def log(message):
 
 
 BRIGHT_QUBITS_DATASETS = [
-    'Data4Jens/BrightTimeTagSet1.csv',
-    'Data4Jens/BrightTimeTagSet2.csv',
-    'Data4Jens/BrightTimeTagSet3.csv',
-    'Data4Jens/BrightTimeTagSet4.csv',
-    'Data4Jens/BrightTimeTagSet5.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet1.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet2.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet3.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet4.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet5.csv',
 ]
 
 DARK_QUBITS_DATASETS = [
-    'Data4Jens/DarkTimeTagSet1.csv',
-    'Data4Jens/DarkTimeTagSet2.csv',
-    'Data4Jens/DarkTimeTagSet3.csv',
-    'Data4Jens/DarkTimeTagSet4.csv',
-    'Data4Jens/DarkTimeTagSet5.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet1.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet2.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet3.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet4.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet5.csv',
 ]
 
 MOST_NUMBER_OF_PHOTONS_CAPTURED = 77
@@ -109,21 +109,21 @@ def draw_plot_misclassified_indices(fp_indices, fn_indices):
 
     # plt.tight_layout()  # prevent overlapping of xlabel and subplot title
 
-    # fig = plt.figure()
-    # fig.suptitle("Frequency of Falsely-classified Instances")
-    # ax = plt.subplot(2, 1, 1)
-    # ax.set_title("False Positive Instances")
-    # ax.set_xlabel("Instance Index")
-    # ax.set_ylabel("Occurrences")
-    # ax.bar(list(map(lambda index: str(index), fp_index_frequency.keys())), fp_index_frequency.values())
+    fig = plt.figure()
+    fig.suptitle("Frequency of Falsely-classified Instances")
+    ax = plt.subplot(2, 1, 1)
+    ax.set_title("False Positive Instances")
+    ax.set_xlabel("Instance Index")
+    ax.set_ylabel("Occurrences")
+    ax.bar(list(map(lambda index: str(index), fp_index_frequency.keys())), fp_index_frequency.values())
 
-    # ax = plt.subplot(2, 1, 2)
-    # ax.set_title("False Negative Instances")
-    # ax.set_xlabel("Instance Index")
-    # ax.set_ylabel("Occurrences")
-    # ax.bar(list(map(lambda index: str(index), fn_index_frequency.keys())), fn_index_frequency.values())
+    ax = plt.subplot(2, 1, 2)
+    ax.set_title("False Negative Instances")
+    ax.set_xlabel("Instance Index")
+    ax.set_ylabel("Occurrences")
+    ax.bar(list(map(lambda index: str(index), fn_index_frequency.keys())), fn_index_frequency.values())
     
-    # plt.show()
+    plt.show()
 
 
 def draw_plot_photons_count(fp_instances, fn_instances):
@@ -157,10 +157,11 @@ if __name__ == '__main__':
     fp_instances, fn_instances = load_classifier_test_results(
             # ['classifier_test_result_mlp_{}.csv'.format(n) for n in range(0, 5)]
             # + ['classifier_test_result_mlp_kfold_{}.csv'.format(n) for n in range(0, 5)])
-            ['Results/falsely-classified-instances-mlp-lg-rf/classifier_test_result_{}.csv'.format(n) for n in range(0, 15)])
+            # ['Results/falsely-classified-instances-mlp-lg-rf/classifier_test_result_{}.csv'.format(n) for n in range(0, 15)]
+            ['../data/interim/classifier_test_result_{}.csv'.format(n) for n in range(0, 1)])
     fp_indices = find_instances_indices(dataset, fp_instances)
     fn_indices = find_instances_indices(dataset, fn_instances)
-    # draw_plot_misclassified_indices(fp_indices, fn_indices)
+    draw_plot_misclassified_indices(fp_indices, fn_indices)
     draw_plot_photons_count(fp_instances, fn_instances)
     # write_instances_to_file(dataset, fp_indices, fn_indices)
     log("Done.")
