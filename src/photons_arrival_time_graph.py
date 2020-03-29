@@ -1,3 +1,4 @@
+import os
 from os import sys
 import csv
 import numpy as np
@@ -8,19 +9,19 @@ def log(message):
 
 
 BRIGHT_QUBITS_DATASETS = [
-    'Data4Jens/BrightTimeTagSet1.csv',
-    'Data4Jens/BrightTimeTagSet2.csv',
-    'Data4Jens/BrightTimeTagSet3.csv',
-    'Data4Jens/BrightTimeTagSet4.csv',
-    'Data4Jens/BrightTimeTagSet5.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet1.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet2.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet3.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet4.csv',
+    '../data/processed/Data4Jens/BrightTimeTagSet5.csv',
 ]
 
 DARK_QUBITS_DATASETS = [
-    'Data4Jens/DarkTimeTagSet1.csv',
-    'Data4Jens/DarkTimeTagSet2.csv',
-    'Data4Jens/DarkTimeTagSet3.csv',
-    'Data4Jens/DarkTimeTagSet4.csv',
-    'Data4Jens/DarkTimeTagSet5.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet1.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet2.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet3.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet4.csv',
+    '../data/processed/Data4Jens/DarkTimeTagSet5.csv',
 ]
 
 
@@ -53,10 +54,10 @@ def draw_plot(qubits_measurements):
 
 
 if __name__ == '__main__':
-    # qubits_measurements = load_datasets(BRIGHT_QUBITS_DATASETS + DARK_QUBITS_DATASETS)
-    qubits_measurements = load_datasets([
-        'Results/falsely-classified-instances-mlp-lg-rf/false_positive_instances.csv', 
-        'Results/falsely-classified-instances-mlp-lg-rf/false_negative_instances.csv'
-    ])
+    qubits_measurements = load_datasets(BRIGHT_QUBITS_DATASETS + DARK_QUBITS_DATASETS)
+    # qubits_measurements = load_datasets([
+    #     'Results/falsely-classified-instances-mlp-lg-rf/false_positive_instances.csv', 
+    #     'Results/falsely-classified-instances-mlp-lg-rf/false_negative_instances.csv'
+    # ])
     draw_plot(qubits_measurements)
     log("Done.")

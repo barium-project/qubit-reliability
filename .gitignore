@@ -1,16 +1,13 @@
 .DS_Store
 .vscode
 .ipynb_checkpoints
+
 venv
+env
+
 __pycache__
 ~$*
 
-Data4Jens
-Data4Jens.zip
+data/processed
 pickle_data
 classifier_test_result*
-Qubit-Capstone-Project-Report.aux
-Qubit-Capstone-Project-Report.synctex.gz
-Qubit-Capstone-Project-Report.fdb_latexmk
-Qubit-Capstone-Project-Report.fls
-Qubit-Capstone-Project-Report.log
