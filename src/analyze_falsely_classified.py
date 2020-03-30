@@ -108,15 +108,15 @@ def draw_plot_photons_count(fp_instances, fn_instances):
 
 if __name__ == '__main__':
     # draw_plot([1, 1, 1, 5, 5, 2], [1, 1, 1, 5, 5, 2])
-    dataset = load_datasets()
+    X, _ = read_qubit_measurements()
     fp_instances, fn_instances = load_classifier_test_results(
             # ['classifier_test_result_mlp_{}.csv'.format(n) for n in range(0, 5)]
             # + ['classifier_test_result_mlp_kfold_{}.csv'.format(n) for n in range(0, 5)])
             # ['Results/falsely-classified-instances-mlp-lg-rf/classifier_test_result_{}.csv'.format(n) for n in range(0, 15)]
             ['../data/interim/classifier_test_result_{}.csv'.format(n) for n in range(0, 1)])
-    fp_indices = find_instances_indices(dataset, fp_instances)
-    fn_indices = find_instances_indices(dataset, fn_instances)
+    fp_indices = find_instances_indices(X, fp_instances)
+    fn_indices = find_instances_indices(X, fn_instances)
     draw_plot_misclassified_indices(fp_indices, fn_indices)
     draw_plot_photons_count(fp_instances, fn_instances)
-    # write_instances_to_file(dataset, fp_indices, fn_indices)
+    # write_instances_to_file(X, fp_indices, fn_indices)
     logging.info("Done.")

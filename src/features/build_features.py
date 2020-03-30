@@ -20,17 +20,6 @@ DARK_QUBITS_DATASETS = [
     '../data/processed/v1/DarkTimeTagSet5.csv',
 ]
 
-def load_datasets():
-    qubits_measurements = []
-    for dataset_filename in BRIGHT_QUBITS_DATASETS + DARK_QUBITS_DATASETS:
-        with open(dataset_filename, 'r') as dataset_file:
-            logging.info("Loading {}".format(dataset_filename))
-            csv_reader = csv.reader(dataset_file)
-            for line in csv_reader:
-                qubits_measurements.append(
-                    list(map(lambda timestamp: float(timestamp), line)))
-    return qubits_measurements
-
 def load_classifier_test_results(filenames):
     fp_instances = []  # false positives
     fn_instances = []  # false negatives
