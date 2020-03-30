@@ -232,7 +232,7 @@ def majority_vote_grid_search_cv(qubits_measurements_train, qubits_truths_train,
 
 # Main Tasks
 def run_mlp_classifier_in_paper():
-    qubits_measurements, qubits_truths = load_datasets2()
+    qubits_measurements, qubits_truths = read_qubit_measurements()
     qubits_measurements_train, qubits_measurements_test, qubits_truths_train, qubits_truths_test = \
         train_test_split(qubits_measurements, qubits_truths, test_size=0.20, random_state=42)
 
@@ -249,7 +249,7 @@ def run_mlp_classifier_in_paper():
 
 
 def run_mlp_grid_search_cv():
-    qubits_measurements, qubits_truths = load_datasets2()
+    qubits_measurements, qubits_truths = read_qubit_measurements()
     qubits_measurements_train, qubits_measurements_test, qubits_truths_train, qubits_truths_test = \
         train_test_split(qubits_measurements, qubits_truths, test_size=0.20, random_state=42)
         
@@ -269,7 +269,9 @@ def run_mlp_with_kfold_data_split():
     (32 neurons per layer, 2 layers, photons cutoff at BEST_ARRIVAL_TIME_THRESHOLD)
     This is the model presented on 01/30/2020 meeting
     """
-    qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets2()))
+    qubits_measurements, qubits_truths = read_qubit_measurements()
+    qubits_measurements = np.array(qubits_measurements)
+    qubits_truths = np.array(qubits_truths)
 
     kf = KFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
     clf_accuracies = []
@@ -301,7 +303,9 @@ def run_mlp_grid_search_cv_with_kfold_data_split(num_layers=2):
     In each fold of the 5-fold training/testing data split, grid search for the best params in MLPClassifier
     and get the average accuracy
     """
-    qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets2()))
+    qubits_measurements, qubits_truths = read_qubit_measurements()
+    qubits_measurements = np.array(qubits_measurements)
+    qubits_truths = np.array(qubits_truths)
 
     kf = KFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
     clf_accuracies = []
@@ -340,7 +344,7 @@ def run_mlp_with_cross_validation_average():
     """
     logging.info("Starting MLPClassifier testing with Cross Validation Method.")
 
-    qubits_measurements, qubits_truths = load_datasets2()
+    qubits_measurements, qubits_truths = read_qubit_measurements()
 
     mlp_pipeline = Pipeline([
             ('hstgm', Histogramize(num_buckets=11, arrival_time_threshold=(PRE_ARRIVAL_TIME_THRESHOLD, POST_ARRIVAL_TIME_THRESHOLD))),
@@ -368,7 +372,7 @@ def run_mlp_grid_search_cv_with_cross_validation_average():
     """
     logging.info("Starting MLPClassifier Grid Search with Cross Validation Method.")
 
-    qubits_measurements, qubits_truths = load_datasets2()
+    qubits_measurements, qubits_truths = read_qubit_measurements()
 
     # construct iterator for training/testing dataset split
     # evenly distribute qubits with a certain number of photons captured
@@ -394,7 +398,9 @@ def run_logistic_regression_with_kfold_data_split():
     Logistic Regression with the best parameters found before, using 5-fold data split
     Mostly concerned with the falsely-classified instances fed to further analysis
     """
-    qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets2()))
+    qubits_measurements, qubits_truths = read_qubit_measurements()
+    qubits_measurements = np.array(qubits_measurements)
+    qubits_truths = np.array(qubits_truths)
 
     kf = KFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
     clf_accuracies = []
@@ -422,7 +428,7 @@ def run_logistic_regression_with_kfold_data_split():
 
 
 def run_logistic_regression_grid_search_cv():
-    qubits_measurements, qubits_truths = load_datasets2()
+    qubits_measurements, qubits_truths = read_qubit_measurements()
     qubits_measurements_train, qubits_measurements_test, qubits_truths_train, qubits_truths_test = \
         train_test_split(qubits_measurements, qubits_truths, test_size=0.20, random_state=42)
 
@@ -439,7 +445,9 @@ def run_random_forest_with_kfold_data_split():
     Random forest with the best parameters found before (currently no parameter), using 5-fold data split
     Mostly concerned with the falsely-classified instances fed to further analysis
     """
-    qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets2()))
+    qubits_measurements, qubits_truths = read_qubit_measurements()
+    qubits_measurements = np.array(qubits_measurements)
+    qubits_truths = np.array(qubits_truths)
 
     kf = KFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
     clf_accuracies = []
@@ -467,7 +475,7 @@ def run_random_forest_with_kfold_data_split():
 
 
 def run_random_forest_grid_search_cv():
-    qubits_measurements, qubits_truths = load_datasets2()
+    qubits_measurements, qubits_truths = read_qubit_measurements()
     qubits_measurements_train, qubits_measurements_test, qubits_truths_train, qubits_truths_test = \
         train_test_split(qubits_measurements, qubits_truths, test_size=0.20, random_state=42)
         
@@ -485,7 +493,7 @@ def run_majority_vote_with_kfold_data_split():
     perform Majority Vote classification on each set, and report
     the average accuracy across the 5 folds.
     """
-    qubits_measurements, qubits_truths = load_datasets2()
+    qubits_measurements, qubits_truths = read_qubit_measurements()
     qubits_measurements = np.array(qubits_measurements)
     qubits_truths = np.array(qubits_truths)
 
@@ -520,7 +528,7 @@ def run_majority_vote_with_kfold_data_split():
 def run_majority_vote_grid_search_cv_with_cross_validation_average():
     logging.info("Starting Voting Classifier Grid Search with Cross Validation Method.")
 
-    qubits_measurements, qubits_truths = load_datasets2()
+    qubits_measurements, qubits_truths = read_qubit_measurements()
 
     # construct iterator for training/testing dataset split
     # evenly distribute qubits with a certain number of photons captured
@@ -548,7 +556,9 @@ def run_threshold_cutoff():
     """
     logging.info("Starting Threshold Cutoff Classifier.")
     
-    qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets2()))
+    qubits_measurements, qubits_truths = read_qubit_measurements()
+    qubits_measurements = np.array(qubits_measurements)
+    qubits_truths = np.array(qubits_truths)
     
     # Data split
     kf = KFold(n_splits=5, shuffle=False)
@@ -570,13 +580,13 @@ if __name__ == '__main__':
     # run_mlp_grid_search_cv()
     # run_mlp_with_kfold_data_split()
     # run_mlp_with_cross_validation_average()
-    # run_mlp_grid_search_cv_with_cross_validation_average()
+    run_mlp_grid_search_cv_with_cross_validation_average()
     # run_mlp_grid_search_cv_with_kfold_data_split(2)
     # run_logistic_regression_with_kfold_data_split()
     # run_logistic_regression_grid_search_cv()
     # run_random_forest_with_kfold_data_split()
     # run_random_forest_grid_search_cv()
     # run_majority_vote_with_kfold_data_split()
-    run_majority_vote_grid_search_cv_with_cross_validation_average()
+    # run_majority_vote_grid_search_cv_with_cross_validation_average()
     # run_threshold_cutoff()
     logging.info("Done.")
