@@ -112,9 +112,9 @@ def find_false_classifications_with_photon_histogram(limit):
         if ground_pred[0] == 0 and ground_pred[1] == 1:
             axs[count].set_xlabel("Time")
             axs[count].set_ylabel("Number of Photons")
-            axs[count].set_xticks(np.linspace(0, 0.051, 18))
+            axs[count].set_xticks(np.linspace(0, 0.0051, 18))
             axs[count].set_yticks(np.linspace(0, 2, 3))
-            axs[count].hist(X[i], bins=1000, range=(0, 0.051))
+            axs[count].hist(X[i], bins=1000, range=(0, 0.0051))
             print(X[i])
 
             count += 1
@@ -134,9 +134,9 @@ def find_false_classifications_with_photon_histogram(limit):
         if ground_pred[0] == 1 and ground_pred[1] == 0:
             axs[count].set_xlabel("Time")
             axs[count].set_ylabel("Number of Photons")
-            axs[count].set_xticks(np.linspace(0, 0.051, 18))
+            axs[count].set_xticks(np.linspace(0, 0.0051, 18))
             axs[count].set_yticks(np.linspace(0, 2, 3))
-            axs[count].hist(X[i], bins=1000, range=(0, 0.051))
+            axs[count].hist(X[i], bins=1000, range=(0, 0.0051))
             print(X[i])
 
             count += 1
