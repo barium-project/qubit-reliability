@@ -186,7 +186,9 @@ def draw_photon_count_frequency_plot_split_by_truth(qubits_measurements, qubits_
     plt.show()
 
 if __name__ == '__main__':
-    qubits_measurements, qubits_truths = tuple(map(lambda dataset: np.array(dataset), load_datasets2()))
+    qubits_measurements, qubits_truths = read_qubit_measurements()
+    qubits_measurements = np.array(qubits_measurements)
+    qubits_truths = np.array(qubits_truths)
 
     # "Just-kidding" Split
     # draw_photon_count_frequency_plot_split_by_truth(qubits_measurements, qubits_truths, 
