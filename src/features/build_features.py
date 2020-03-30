@@ -89,16 +89,5 @@ def read_qubit_measurements():
 
     return X, y
 
-def load_datasets(filenames):
-    qubits_measurements = []
-    for dataset_filename in filenames:
-        with open(dataset_filename, 'r') as dataset_file:
-            logging.info("Loading {}".format(dataset_filename))
-            csv_reader = csv.reader(dataset_file)
-            for line in csv_reader:
-                qubits_measurements.extend(
-                    list(map(lambda timestamp: float(timestamp), line)))
-    return qubits_measurements
-
 if __name__ == "__main__":
     pass
