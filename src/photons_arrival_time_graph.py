@@ -20,6 +20,6 @@ def draw_plot(qubits_measurements):
 
 
 if __name__ == '__main__':
-    X, y = read_qubit_measurements()
+    X, y = load_data()
     draw_plot([photon for row in X for photon in row])
     logging.info("Done.")

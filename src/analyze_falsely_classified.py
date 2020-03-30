@@ -108,7 +108,7 @@ def draw_plot_photons_count(fp_instances, fn_instances):
 
 if __name__ == '__main__':
     # draw_plot([1, 1, 1, 5, 5, 2], [1, 1, 1, 5, 5, 2])
-    X, _ = read_qubit_measurements()
+    X, _ = load_data()
     fp_instances, fn_instances = load_classifier_test_results(
             # ['classifier_test_result_mlp_{}.csv'.format(n) for n in range(0, 5)]
             # + ['classifier_test_result_mlp_kfold_{}.csv'.format(n) for n in range(0, 5)])

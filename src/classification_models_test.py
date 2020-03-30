@@ -77,7 +77,7 @@ class ThresholdCutoffEarlyArrivalModel(ClassificationModel):
         return accuracy, float(false_positives) / n, float(false_negatives) / n
 
 def threshold_cutoff_experiments():
-    X, y = read_qubit_measurements()
+    X, y = load_data()
 
     most_photons_received = max(map(lambda row: len(row), X))
     print("Max number of photons captured for one qubit: {}".format(most_photons_received))
@@ -100,7 +100,7 @@ def find_false_classifications_with_photon_histogram(limit):
     Classify qubits by the Threshold Cutoff Model with the optimal threshold, find all mis-classified qubits and
     print the histogram of each's measured photons (frequency of every arriving time interval)
     """
-    X, y = read_qubit_measurements()
+    X, y = load_data()
     model = ThresholdCutoffModel(12)
     y_ground_pred = list(zip(*[y, model.predict(X)]))
 
@@ -157,7 +157,7 @@ def threshold_cutoff_early_arrival_experiments():
     with open('../data/interim/threshold_cutoff_early_arrival_experiment.csv', 'w') as result_file:
         writer = csv.writer(result_file)
 
-        X, y = read_qubit_measurements()
+        X, y = load_data()
         most_photons_received = max(map(lambda row: len(row), X))
         latest_photon_arrival_time = max(map(lambda row: max(row) if len(row) > 0 else 0, X))
         logging.info("Latest photon arrival time among all measurements: {}".format(latest_photon_arrival_time))
