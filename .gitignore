@@ -8,5 +8,4 @@ env
 __pycache__
 ~$*
 
-data/processed
 data/interim
