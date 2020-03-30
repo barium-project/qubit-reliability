@@ -20,17 +20,6 @@ DARK_QUBITS_DATASETS = [
     '../data/processed/Data4Jens/DarkTimeTagSet5.csv',
 ]
 
-class Qubit(Enum):
-    BRIGHT = 0
-    DARK = 1
-
-class QubitMeasurement():
-    def __init__(self, photons, ground_truth):
-        super().__init__()
-        self.photons = photons
-        self.ground_truth = ground_truth
-        self.classified_result = None
-
 def load_datasets():
     qubits_measurements = []
     for dataset_filename in BRIGHT_QUBITS_DATASETS + DARK_QUBITS_DATASETS:
@@ -79,19 +68,26 @@ def load_datasets2():
         (bright_qubits_ground_truths + dark_qubits_ground_truths))
 
 def read_qubit_measurements():
-    def read_from_files_with_ground_truth(filenames, ground_truth, qubit_measurements):
-        for measurement_filename in filenames:
-            logging.info("Loading {}".format(measurement_filename))
-            with open(measurement_filename, 'r') as measurement_file:
-                reader = csv.reader(measurement_file)
-                for photons in reader:
-                    qubit_measurements.append(QubitMeasurement([float(photon) for photon in photons], ground_truth))
-        return qubit_measurements
+    X = []
+    y = []
 
-    qubit_measurements = []
-    read_from_files_with_ground_truth(BRIGHT_QUBITS_DATASETS, Qubit.BRIGHT, qubit_measurements)
-    read_from_files_with_ground_truth(DARK_QUBITS_DATASETS, Qubit.DARK, qubit_measurements)
-    return qubit_measurements
+    for file_name in BRIGHT_QUBITS_DATASETS:
+        logging.info("Loading {}".format(file_name))
+        with open(file_name, 'r') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                X.append([float(photon) for photon in row])
+                y.append(0)
+
+    for file_name in DARK_QUBITS_DATASETS:
+        logging.info("Loading {}".format(file_name))
+        with open(file_name, 'r') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                X.append([float(photon) for photon in row])
+                y.append(1)
+
+    return X, y
 
 def load_datasets(filenames):
     qubits_measurements = []
@@ -103,3 +99,6 @@ def load_datasets(filenames):
                 qubits_measurements.extend(
                     list(map(lambda timestamp: float(timestamp), line)))
     return qubits_measurements
+
+if __name__ == "__main__":
+    pass
