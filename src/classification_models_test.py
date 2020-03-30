@@ -154,7 +154,7 @@ def threshold_cutoff_early_arrival_experiments():
     Per the idea in paper "Machine learning assisted readout of trapped-ion qubits",
     try filter out late arrival photons in the Threshold Cutoff classification approach
     """
-    with open('threshold_cutoff_early_arrival_experiment.csv', 'w') as result_file:
+    with open('../data/interim/threshold_cutoff_early_arrival_experiment.csv', 'w') as result_file:
         writer = csv.writer(result_file)
 
         X, y = read_qubit_measurements()
