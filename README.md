@@ -7,7 +7,7 @@ cd qubit-reliability                                                # Move to di
 python3.6 -m venv env                                               # Create virtual environment
 source env/bin/activate                                             # Activate virtual environmnet
 pip install -r requirements.txt                                     # Install dependencies
-python -m src.models.ml_classifications                             # Run ml_classifications.py
+python -m src.models.threshold_models                               # Run threshold_models.py
 ```
 
 ## Directory Structure
@@ -32,7 +32,7 @@ python -m src.models.ml_classifications                             # Run ml_cla
     │
     ├── models         <- Scripts to train models and then use trained models to make
     │   |                 predictions
-    |   └── ...
+    |   └── threshold_models.py
     │
     └── visualization  <- Scripts to create exploratory and results oriented visualizations
         └── visualize.py
