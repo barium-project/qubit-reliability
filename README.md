@@ -1,5 +1,15 @@
 # qubit-reliability
 
+## How to run
+```
+git clone https://github.com/barium-project/qubit-reliability.git   # Clone repo
+cd qubit-reliability                                                # Move to directory
+python3.6 -m venv env                                               # Create virtual environment
+source env/bin/activate                                             # Activate virtual environmnet
+pip install -r requirements.txt                                     # Install dependencies
+python -m src.models.ml_classifications                             # Run ml_classifications.py
+```
+
 ## Directory Structure
 ```
 ├── README.md          <- The top-level README for developers using this project.
