@@ -4,7 +4,7 @@ import logging
 import numpy as np
 from matplotlib import pyplot as plt
 
-from features.build_features import *
+from src.features.build_features import *
 
 def use_ramdisk(filenames):
     return list(map(lambda filename: "/Volumes/ramdisk/" + filename, filenames))

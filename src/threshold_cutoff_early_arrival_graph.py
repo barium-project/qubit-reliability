@@ -7,7 +7,7 @@ import numpy as np
 from collections import defaultdict
 
 def draw_plot():
-    with open('../data/interim/threshold_cutoff_early_arrival_experiment.csv', 'r') as data_file:
+    with open('./data/interim/threshold_cutoff_early_arrival_experiment.csv', 'r') as data_file:
         reader = csv.reader(data_file)
         number_threshold, arrival_time_threshold = set(), set()
         reliability = defaultdict(dict)

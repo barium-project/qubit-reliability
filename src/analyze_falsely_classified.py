@@ -4,7 +4,7 @@ import logging
 from collections import defaultdict
 from matplotlib import pyplot as plt
 
-from features.build_features import *
+from src.features.build_features import *
 
 
 MOST_NUMBER_OF_PHOTONS_CAPTURED = 77
@@ -113,7 +113,7 @@ if __name__ == '__main__':
             # ['classifier_test_result_mlp_{}.csv'.format(n) for n in range(0, 5)]
             # + ['classifier_test_result_mlp_kfold_{}.csv'.format(n) for n in range(0, 5)])
             # ['Results/falsely-classified-instances-mlp-lg-rf/classifier_test_result_{}.csv'.format(n) for n in range(0, 15)]
-            ['../data/interim/classifier_test_result_{}.csv'.format(n) for n in range(0, 1)])
+            ['./data/interim/classifier_test_result_{}.csv'.format(n) for n in range(0, 1)])
     fp_indices = find_instances_indices(X, fp_instances)
     fn_indices = find_instances_indices(X, fn_instances)
     draw_plot_misclassified_indices(fp_indices, fn_indices)

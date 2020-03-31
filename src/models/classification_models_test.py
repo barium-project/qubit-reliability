@@ -5,7 +5,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
-from features.build_features import *
+from src.features.build_features import *
 
 
 BEST_RELIABILITY_ACHIEVED = 0.9997081106493118
@@ -154,7 +154,7 @@ def threshold_cutoff_early_arrival_experiments():
     Per the idea in paper "Machine learning assisted readout of trapped-ion qubits",
     try filter out late arrival photons in the Threshold Cutoff classification approach
     """
-    with open('../data/interim/threshold_cutoff_early_arrival_experiment.csv', 'w') as result_file:
+    with open('./data/interim/threshold_cutoff_early_arrival_experiment.csv', 'w') as result_file:
         writer = csv.writer(result_file)
 
         X, y = load_data()
@@ -176,6 +176,6 @@ def threshold_cutoff_early_arrival_experiments():
 
 
 if __name__ == '__main__':
-    threshold_cutoff_experiments()
+    # threshold_cutoff_experiments()
     # find_false_classifications_with_photon_histogram(limit=10)
-    # threshold_cutoff_early_arrival_experiments()
+    threshold_cutoff_early_arrival_experiments()

@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 from matplotlib.pyplot import subplots_adjust
 from sklearn.model_selection import  KFold, StratifiedKFold, train_test_split
 
-from features.build_features import *
+from src.features.build_features import *
 
 
 RANDOM_SEED = 42

@@ -12,14 +12,14 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 
-from features.build_features import *
+from src.features.build_features import *
 
 
 def picklize(db_id, overwrite=False):
     def decorator(function):
         def wrapper(*args, **kwargs):
             def _pickle_db_path(db_id):
-                return "../data/interim/{}.pickle".format(db_id)
+                return "./data/interim/{}.pickle".format(db_id)
 
             db_filename = _pickle_db_path(db_id)
             if (not overwrite) and path.exists(db_filename):
@@ -120,7 +120,7 @@ def classifier_test(classifier, qubits_measurements_train, qubits_measurements_t
             lambda index: qubits_truths_test[index] == 1 and qubits_predict_test[index] == 0, 
             range(len(qubits_measurements_test))))))
 
-    output_filename = "../data/interim/{base}_{counter}.csv".format(
+    output_filename = "./data/interim/{base}_{counter}.csv".format(
         base=CLASSIFIER_TEST_OUTPUT_FILENAME_BASE, counter=_classifier_test_counter)
     with open(output_filename, 'w') as file:
         csv_writer = csv.writer(file)
@@ -576,11 +576,11 @@ def run_threshold_cutoff():
 
 
 if __name__ == '__main__':
-    # run_mlp_classifier_in_paper()
+    run_mlp_classifier_in_paper()
     # run_mlp_grid_search_cv()
     # run_mlp_with_kfold_data_split()
     # run_mlp_with_cross_validation_average()
-    run_mlp_grid_search_cv_with_cross_validation_average()
+    # run_mlp_grid_search_cv_with_cross_validation_average()
     # run_mlp_grid_search_cv_with_kfold_data_split(2)
     # run_logistic_regression_with_kfold_data_split()
     # run_logistic_regression_grid_search_cv()

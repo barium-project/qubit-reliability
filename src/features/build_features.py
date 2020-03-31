@@ -1,20 +1,21 @@
 import csv
 from enum import Enum
 import logging
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 import numpy as np
 
 QUBIT_DATASET = [
-    ['../data/processed/v1/BrightTimeTagSet1.csv',
-    '../data/processed/v1/BrightTimeTagSet2.csv',
-    '../data/processed/v1/BrightTimeTagSet3.csv',
-    '../data/processed/v1/BrightTimeTagSet4.csv',
-    '../data/processed/v1/BrightTimeTagSet5.csv',],
-    ['../data/processed/v1/DarkTimeTagSet1.csv',
-    '../data/processed/v1/DarkTimeTagSet2.csv',
-    '../data/processed/v1/DarkTimeTagSet3.csv',
-    '../data/processed/v1/DarkTimeTagSet4.csv',
-    '../data/processed/v1/DarkTimeTagSet5.csv',]]
+    ['./data/processed/v1/BrightTimeTagSet1.csv',
+    './data/processed/v1/BrightTimeTagSet2.csv',
+    './data/processed/v1/BrightTimeTagSet3.csv',
+    './data/processed/v1/BrightTimeTagSet4.csv',
+    './data/processed/v1/BrightTimeTagSet5.csv',],
+    ['./data/processed/v1/DarkTimeTagSet1.csv',
+    './data/processed/v1/DarkTimeTagSet2.csv',
+    './data/processed/v1/DarkTimeTagSet3.csv',
+    './data/processed/v1/DarkTimeTagSet4.csv',
+    './data/processed/v1/DarkTimeTagSet5.csv',]]
 
 def load_data():
     X, y = [], []
