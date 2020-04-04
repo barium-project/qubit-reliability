@@ -1,9 +1,11 @@
 import logging
 
+from matplotlib import pyplot as plt
 import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV, KFold, StratifiedKFold, cross_validate
 from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import Normalizer, StandardScaler
 
 from src.features.build_features import *
 from src.util import *
@@ -15,15 +17,14 @@ def mlp_grid_search_cv(qubits_measurements_train, qubits_truths_train, **kwargs)
     logging.info("Starting Grid Search with Cross Validation on MLP Classifier.")
     
     mlp_pipeline = Pipeline([
-        # ('hstgm', Histogramize(num_buckets=6)),
-        # ('hstgm', Histogramize(arrival_time_threshold=(0, POST_ARRIVAL_TIME_THRESHOLD))),
-        ('hstgm', Histogramize(num_buckets=11, arrival_time_threshold=(PRE_ARRIVAL_TIME_THRESHOLD, POST_ARRIVAL_TIME_THRESHOLD))),
+        # ('hstgm', Histogramize()),
+        ('hstgm', Histogramize(num_buckets=11)),
         ('clf', MLPClassifier(hidden_layer_sizes=(33, 33), activation='relu', solver='adam', random_state=RANDOM_SEED))
     ])
 
     mlp_param_grid = {
         # 'hstgm__num_buckets': range(1, 33),
-        # 'hstgm__arrival_time_threshold': [(PRE_ARRIVAL_TIME_THRESHOLD, POST_ARRIVAL_TIME_THRESHOLD), (0, POST_ARRIVAL_TIME_THRESHOLD)],
+        # 'hstgm__arrival_time_threshold': [(FIRST_ARRIVAL, LAST_ARRIVAL), (FIRST_ARRIVAL, LAST_ARRIVAL)],
         'clf__hidden_layer_sizes': [(33,) * n for n in range(2, 6)]
         # 'clf__learning_rate_init': [0.001, 0.0005],
         # 'clf__max_iter': [200, 500]
@@ -34,20 +35,16 @@ def mlp_grid_search_cv(qubits_measurements_train, qubits_truths_train, **kwargs)
     return mlp_grid
 
 def run_mlp_classifier_in_paper():
-    qubits_measurements, qubits_truths = load_data()
-    qubits_measurements_train, qubits_measurements_test, qubits_truths_train, qubits_truths_test = \
-        train_test_split(qubits_measurements, qubits_truths, test_size=0.20, random_state=42)
+    X, y = load_data()
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
 
-    logging.info("Histogramizing training and testing data.")
-    histogramizer = Histogramize(num_buckets=6)
-    qubits_measurements_train_histogram = histogramizer.transform(qubits_measurements_train)
-    qubits_measurements_test_histogram = histogramizer.transform(qubits_measurements_test)
-
-    mlp = picklize("mlp")(classifier_train)(
-        MLPClassifier(hidden_layer_sizes=(8, 8), activation='relu', solver='adam'),  # 2-layer feed-forward neural network used in the paper
-        qubits_measurements_train_histogram, qubits_truths_train)
-    classifier_test(mlp, qubits_measurements_train_histogram, qubits_measurements_test_histogram, 
-        qubits_truths_train, qubits_truths_test)
+    pipeline = Pipeline([
+        ("Histogramizer", Histogramizer()),
+        ("Neural network", MLPClassifier(hidden_layer_sizes=(8, 8), activation='relu', solver='adam'))]
+    )
+    pipeline.fit(X_train, y_train)
+    y_pred = pipeline.predict(X_test)
+    print(classification_report(y_test, y_pred))
 
 def run_mlp_grid_search_cv():
     qubits_measurements, qubits_truths = load_data()
@@ -66,12 +63,10 @@ def run_mlp_grid_search_cv():
 def run_mlp_with_kfold_data_split():
     """
     Run the best model gotten from "run_mlp", but using 5-fold training/testing dataset split
-    (32 neurons per layer, 2 layers, photons cutoff at BEST_ARRIVAL_TIME_THRESHOLD)
+    (32 neurons per layer, 2 layers)
     This is the model presented on 01/30/2020 meeting
     """
     qubits_measurements, qubits_truths = load_data()
-    qubits_measurements = np.array(qubits_measurements)
-    qubits_truths = np.array(qubits_truths)
 
     kf = KFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
     clf_accuracies = []
@@ -85,7 +80,7 @@ def run_mlp_with_kfold_data_split():
             qubits_truths[train_index], qubits_truths[test_index]
 
         mlp_pipeline = classifier_train(Pipeline([
-                ('hstgm', Histogramize(num_buckets=6, arrival_time_threshold=(0, BEST_ARRIVAL_TIME_THRESHOLD))),
+                ('hstgm', Histogramize()),
                 ('clf', MLPClassifier(hidden_layer_sizes=(32, 32), activation='relu', solver='adam'))
             ]), qubits_measurements_train, qubits_truths_train)
 
@@ -102,27 +97,47 @@ def run_mlp_with_cross_validation_average():
     Run the best model gotten from "run_mlp" by cross validation method only.
     Training on 80% of the dataset and testing on 20% of the dataset 5 times, and take average of the accuracy
     """
-    logging.info("Starting MLPClassifier testing with Cross Validation Method.")
+    # logging.info("Starting MLPClassifier testing with Cross Validation Method.")
 
-    qubits_measurements, qubits_truths = load_data()
+    # qubits_measurements, qubits_truths = load_data()
 
-    mlp_pipeline = Pipeline([
-            ('hstgm', Histogramize(num_buckets=11, arrival_time_threshold=(PRE_ARRIVAL_TIME_THRESHOLD, POST_ARRIVAL_TIME_THRESHOLD))),
-            ('clf', MLPClassifier(hidden_layer_sizes=(33, 33), activation='relu', solver='adam', random_state=RANDOM_SEED))
-        ])
+    # mlp_pipeline = Pipeline([
+    #         ('hstgm', Histogramize(num_buckets=11)),
+    #         ('clf', MLPClassifier(hidden_layer_sizes=(33, 33), activation='relu', solver='adam', random_state=RANDOM_SEED))
+    #     ])
 
-    kf = StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
-    qubits_class = []
-    assert(len(qubits_measurements) == len(qubits_truths))
-    for index in range(len(qubits_measurements)):
-        qubits_class.append(qubits_truths[index] * 100 + len(qubits_measurements[index]))
-    cv_indices = kf.split(qubits_measurements, qubits_class)
+    # kf = StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
+    # qubits_class = []
+    # assert(len(qubits_measurements) == len(qubits_truths))
+    # for index in range(len(qubits_measurements)):
+    #     qubits_class.append(qubits_truths[index] * 100 + len(qubits_measurements[index]))
+    # cv_indices = kf.split(qubits_measurements, qubits_class)
 
-    cv_scores = cross_validate(mlp_pipeline, qubits_measurements, qubits_truths, cv=list(cv_indices), scoring='accuracy', n_jobs=-1, verbose=2)
-    print("Scores of Cross Validation Method on MLPClassifier: ")
-    print(cv_scores)
-    print("Average accuracy: {accuracy}".format(accuracy=
-        sum(list(cv_scores['test_score'])) / len(list(cv_scores['test_score']))))
+    # cv_scores = cross_validate(mlp_pipeline, qubits_measurements, qubits_truths, cv=list(cv_indices), scoring='accuracy', n_jobs=-1, verbose=2)
+    # print("Scores of Cross Validation Method on MLPClassifier: ")
+    # print(cv_scores)
+    # print("Average accuracy: {accuracy}".format(accuracy=
+    #     sum(list(cv_scores['test_score'])) / len(list(cv_scores['test_score']))))
+
+    X, y = load_data()
+    for max_iter in range(1,30):
+        with open("res_ss.txt", "a") as file:
+            pipeline = Pipeline([
+                #("Histogramizer", Histogramizer(bins=6)),
+                ("Histogramize", Histogramize(num_buckets=11)),
+                # ("Normalizier", Normalizer()),
+                ("StandardScaler", StandardScaler()),
+                ("Neural network", MLPClassifier(hidden_layer_sizes=(33, 33), activation='relu', solver='adam', max_iter=max_iter, tol=0.0, verbose=False))]
+            )
+            res = cross_validate(pipeline, X, y, scoring=['accuracy', 'f1'], n_jobs=-1, return_train_score=True)
+
+            print("==================={}===================\n".format(max_iter))
+            file.write("==================={}===================\n".format(max_iter))
+            file.write("{}\n".format(res))
+            file.write("train_accuracy {}\n".format(sum(res["train_accuracy"]) / 5))
+            file.write("test_accuracy {}\n".format(sum(res["test_accuracy"]) / 5))
+            file.write("train_f1 {}\n".format(sum(res["train_f1"]) / 5))
+            file.write("test_f1 {}\n\n".format(sum(res["test_f1"]) / 5))
 
 def run_mlp_grid_search_cv_with_cross_validation_average():
     """
@@ -157,8 +172,6 @@ def run_mlp_grid_search_cv_with_kfold_data_split(num_layers=2):
     and get the average accuracy
     """
     qubits_measurements, qubits_truths = load_data()
-    qubits_measurements = np.array(qubits_measurements)
-    qubits_truths = np.array(qubits_truths)
 
     kf = KFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
     clf_accuracies = []
@@ -191,9 +204,9 @@ def run_mlp_grid_search_cv_with_kfold_data_split(num_layers=2):
 
 
 if __name__ == '__main__':
-    run_mlp_classifier_in_paper()
+    # run_mlp_classifier_in_paper()
     # run_mlp_grid_search_cv()
     # run_mlp_with_kfold_data_split()
-    # run_mlp_with_cross_validation_average()
+    run_mlp_with_cross_validation_average()
     # run_mlp_grid_search_cv_with_cross_validation_average()
     # run_mlp_grid_search_cv_with_kfold_data_split(2) # broken since at least commit f99e61293fc30756266654fa0744ac6c494ecaff

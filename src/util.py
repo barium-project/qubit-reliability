@@ -7,22 +7,12 @@ import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
-# Data pre-processing
-BEST_ARRIVAL_TIME_THRESHOLD = 0.00529914
-
-RANDOM_SEED = 42
-
-PRE_ARRIVAL_TIME_THRESHOLD = 0.000722906  # from "Distribution of Photons Arrival Times" graph
-POST_ARRIVAL_TIME_THRESHOLD = 0.00522625
-
-
-# Classifiers
-BEST_PHOTON_COUNT_THRESHOLD = 12
+from src.constants import *
 
 class Histogramize(BaseEstimator, TransformerMixin):
-    def __init__(self, arrival_time_threshold=(0, BEST_ARRIVAL_TIME_THRESHOLD), num_buckets=6):
-        self.arrival_time_threshold = arrival_time_threshold
+    def __init__(self, num_buckets=6, arrival_time_threshold=(FIRST_ARRIVAL, LAST_ARRIVAL)):
         self.num_buckets = num_buckets
+        self.arrival_time_threshold = arrival_time_threshold
     
     def fit(self, X, y=None):
         return self

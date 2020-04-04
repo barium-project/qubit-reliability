@@ -3,7 +3,7 @@ import numpy as np
 import csv
 import logging
 from os import path, sys
-from sklearn.base import BaseEstimator, TransformerMixin, ClassifierMixin
+
 from sklearn.model_selection import train_test_split, GridSearchCV, KFold, StratifiedKFold, cross_validate
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
@@ -15,27 +15,12 @@ from src.features.build_features import *
 from src.util import *
 
 
-class ThresholdCutoffClassifier(BaseEstimator, ClassifierMixin):
-    """
-    Given a histogram of photons' arrival times as the data instance, 
-    classify the qubit by counting the number of captured photons
-    """
-    def __init__(self, threshold=BEST_PHOTON_COUNT_THRESHOLD):
-        self.threshold = threshold
-
-    def fit(self, X, y):
-        return self
-
-    def predict(self, X):
-        return list(map(lambda instance: 0 if sum(instance) > self.threshold else 1, X))
-
-
 # Logistic Regression
 def logistic_regression_grid_search_cv(qubits_measurements_train, qubits_truths_train):
     logging.info("Starting Grid Search with Cross Validation on Logistic Regression models.")
 
     lg_pipeline = Pipeline([
-        ('hstgm', Histogramize(num_buckets=6)),
+        ('hstgm', Histogramizer(bins=6)),
         ('clf', LogisticRegression(solver='liblinear', random_state=42))
     ])
 
@@ -55,7 +40,7 @@ def random_forest_grid_search_cv(qubits_measurements_train, qubits_truths_train)
     logging.info("Starting Grid Search with Cross Validation on Random Forest Classifier.")
     
     rf_pipeline = Pipeline([
-        ('hstgm', Histogramize(num_buckets=6)),
+        ('hstgm', Histogramizer(bins=6)),
         ('clf', RandomForestClassifier())
     ])
 
@@ -74,13 +59,12 @@ def majority_vote_grid_search_cv(qubits_measurements_train, qubits_truths_train,
     logging.info("Starting Grid Search with Cross Validation on Majority Vote Classifier.")
 
     mv_pipeline = Pipeline([
-        ('hstgm', Histogramize(
-            arrival_time_threshold=(PRE_ARRIVAL_TIME_THRESHOLD, POST_ARRIVAL_TIME_THRESHOLD))),
+        ('hstgm', Histogramizer(bins=6)),
         ('clf', VotingClassifier([
             ('mlp', 
                 MLPClassifier(activation='relu', solver='adam', hidden_layer_sizes=(32, 32), random_state=RANDOM_SEED)),
             ('tc', 
-                ThresholdCutoffClassifier(threshold=BEST_PHOTON_COUNT_THRESHOLD)),
+                ThresholdCutoffClassifier(threshold=12)),
             ('lg', 
                 LogisticRegression(solver='liblinear', penalty='l2', C=10**-3, random_state=RANDOM_SEED)),
             ('rf', 
@@ -105,8 +89,6 @@ def run_logistic_regression_with_kfold_data_split():
     Mostly concerned with the falsely-classified instances fed to further analysis
     """
     qubits_measurements, qubits_truths = load_data()
-    qubits_measurements = np.array(qubits_measurements)
-    qubits_truths = np.array(qubits_truths)
 
     kf = KFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
     clf_accuracies = []
@@ -120,7 +102,7 @@ def run_logistic_regression_with_kfold_data_split():
             qubits_truths[train_index], qubits_truths[test_index]
 
         lg_pipeline = classifier_train(Pipeline([
-                ('hstgm', Histogramize(num_buckets=6, arrival_time_threshold=(0, BEST_ARRIVAL_TIME_THRESHOLD))),
+                ('hstgm', Histogramizer(bins=6)),
                 ('clf', LogisticRegression(solver='liblinear', random_state=RANDOM_SEED, penalty='l2', C=10**-3))
             ]), qubits_measurements_train, qubits_truths_train)
 
@@ -152,8 +134,6 @@ def run_random_forest_with_kfold_data_split():
     Mostly concerned with the falsely-classified instances fed to further analysis
     """
     qubits_measurements, qubits_truths = load_data()
-    qubits_measurements = np.array(qubits_measurements)
-    qubits_truths = np.array(qubits_truths)
 
     kf = KFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
     clf_accuracies = []
@@ -167,7 +147,7 @@ def run_random_forest_with_kfold_data_split():
             qubits_truths[train_index], qubits_truths[test_index]
 
         rf_pipeline = classifier_train(Pipeline([
-                ('hstgm', Histogramize(num_buckets=6, arrival_time_threshold=(0, BEST_ARRIVAL_TIME_THRESHOLD))),
+                ('hstgm', Histogramizer(bins=6)),
                 ('clf', RandomForestClassifier())
             ]), qubits_measurements_train, qubits_truths_train)
 
@@ -200,8 +180,6 @@ def run_majority_vote_with_kfold_data_split():
     the average accuracy across the 5 folds.
     """
     qubits_measurements, qubits_truths = load_data()
-    qubits_measurements = np.array(qubits_measurements)
-    qubits_truths = np.array(qubits_truths)
 
     kf = KFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
     clf_accuracies = []
@@ -263,8 +241,6 @@ def run_threshold_cutoff():
     logging.info("Starting Threshold Cutoff Classifier.")
     
     qubits_measurements, qubits_truths = load_data()
-    qubits_measurements = np.array(qubits_measurements)
-    qubits_truths = np.array(qubits_truths)
     
     # Data split
     kf = KFold(n_splits=5, shuffle=False)
@@ -273,8 +249,8 @@ def run_threshold_cutoff():
         qubits_measurements[train_index], qubits_measurements[test_index], qubits_truths[train_index], qubits_truths[test_index]
 
     tc_pipeline = Pipeline([
-        ('hstgm', Histogramize(num_buckets=6, arrival_time_threshold=(0, POST_ARRIVAL_TIME_THRESHOLD))),
-        ('clf', ThresholdCutoffClassifier())
+        ('hstgm', Histogramizer(bins=6)),
+        ('clf', ThresholdCutoffClassifier(threshold=12))
     ])
 
     tc_pipeline = classifier_train(tc_pipeline, qubits_measurements_train, qubits_truths_train)
@@ -282,11 +258,15 @@ def run_threshold_cutoff():
 
 
 if __name__ == '__main__':
+    # TODO:
+    # Currently broken due to gridsearch on old Histogramizer object
+    # Will fix if actually needed
+
     # run_logistic_regression_with_kfold_data_split()
     # run_logistic_regression_grid_search_cv()
     # run_random_forest_with_kfold_data_split()
     # run_random_forest_grid_search_cv()
     # run_majority_vote_with_kfold_data_split()
-    # run_majority_vote_grid_search_cv_with_cross_validation_average()
-    run_threshold_cutoff()
+    run_majority_vote_grid_search_cv_with_cross_validation_average()
+    # run_threshold_cutoff()
     logging.info("Done.")
