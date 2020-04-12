@@ -5,7 +5,7 @@
 git clone https://github.com/barium-project/qubit-reliability.git   # Clone repo
 cd qubit-reliability                                                # Move to directory
 tar -xzvf data/processed/v3.zip -C data/processed                   # Unzip data
-python3.6 -m venv env                                               # Create virtual environment
+python3.8 -m venv env                                               # Create virtual environment
 source env/bin/activate                                             # Activate virtual environmnet
 pip install -r requirements.txt                                     # Install dependencies
 python -m src.investigation.analyze_threshold_classifier            # Run analyze_threshold_classifier.py
