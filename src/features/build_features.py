@@ -9,7 +9,7 @@ from src.constants import *
 
 
 class Histogramizer(BaseEstimator, TransformerMixin):
-    def __init__(self, bins, range=(FIRST_ARRIVAL, LAST_ARRIVAL)):
+    def __init__(self, bins, range):
         super().__init__()
         self.range = range
         self.bins = bins
@@ -21,25 +21,32 @@ class Histogramizer(BaseEstimator, TransformerMixin):
         return list(map(lambda x: np.histogram(x, bins=self.bins, range=self.range)[0], X))
 
 
-def load_data():
+def load_data(dataset):
     X, y = [], []
-    min_time = 1.0
-    max_time = 0.0
+    
     for i in [0, 1]:
-        for file_name in QUBIT_DATASET["V3"][i]:
+        for file_name in QUBIT_DATASET[dataset][i]:
             logging.info("Loading {}".format(file_name))
             with open(file_name, 'r') as file:
                 reader = csv.reader(file)
                 for row in reader:
-                    if len([float(photon) for photon in row]) > 0:
-                        min_time = min(min_time, min([float(photon) for photon in row]))
-                        max_time = max(max_time, max([float(photon) for photon in row]))
-                    X.append([float(photon) for photon in row])
+                    row = [float(photon) for photon in row]
+                    X.append(row)
                     y.append(i)
-    print(min_time)
-    print(max_time)
 
     return np.array(X), np.array(y)
+
+def get_stats(X):
+    first_arrival = 1.0
+    last_arrival = 0.0
+    max_count = 0
+    for x in X:
+        if len(x) > 0:
+            first_arrival = min(first_arrival, min(x))
+            last_arrival = max(last_arrival, max(x))
+            max_count = max(max_count, len(x))
+
+    return {'first_arrival': first_arrival, 'last_arrival': last_arrival, 'max_count': max_count}
 
 def filter_datapoints(X, y, y_pred):
     """

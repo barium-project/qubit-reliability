@@ -10,7 +10,7 @@ from sklearn.metrics import classification_report, confusion_matrix, accuracy_sc
 from src.constants import *
 
 class Histogramize(BaseEstimator, TransformerMixin):
-    def __init__(self, num_buckets=6, arrival_time_threshold=(FIRST_ARRIVAL, LAST_ARRIVAL)):
+    def __init__(self, arrival_time_threshold, num_buckets=6):
         self.num_buckets = num_buckets
         self.arrival_time_threshold = arrival_time_threshold
     
