@@ -24,3 +24,16 @@ if __name__ == "__main__":
         print(classification_report(y[i[1]], y_pred, digits=8))
         print(confusion_matrix(y[i[1]], y_pred))
         dp = filter_datapoints(X[i[1]], y[i[1]], y_pred, indices=i[1])
+
+        i_fn_reg = []
+        i_fn_decay = []
+        for dp in dp['i_fn']:
+            if s['file_range']['./data/artificial/v3/dark_tags_by_trial_no_decay_MC.csv'][0] <= dp and \
+                dp <= s['file_range']['./data/artificial/v3/dark_tags_by_trial_no_decay_MC.csv'][1]:
+                i_fn_reg.append(dp)
+            if s['file_range']['./data/artificial/v3/dark_tags_by_trial_with_decay_MC.csv'][0] <= dp and \
+                dp <= s['file_range']['./data/artificial/v3/dark_tags_by_trial_with_decay_MC.csv'][1]:
+                i_fn_decay.append(dp)
+
+        print('fn_reg: {}'.format(len(i_fn_reg)))
+        print('fn_decay: {}'.format(len(i_fn_decay)))
