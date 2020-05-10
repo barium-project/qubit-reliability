@@ -4,7 +4,7 @@
 ```
 git clone https://github.com/barium-project/qubit-reliability.git   # Clone repo
 cd qubit-reliability                                                # Move to directory
-# Download data from Google Drive and place in repo
+# Download data directory from https://drive.google.com/open?id=1I3z8NVTUHmsuCv1mtkwgr_mNwuqicIBv
 python3.8 -m venv env                                               # Create virtual environment
 source env/bin/activate                                             # Activate virtual environmnet
 pip install -r requirements.txt                                     # Install dependencies
@@ -13,12 +13,9 @@ python -m src.investigation.analyze_threshold_classifier            # Run analyz
 
 ## Directory Structure
 ```
-├── data <- https://drive.google.com/open?id=1I3z8NVTUHmsuCv1mtkwgr_mNwuqicIBv
-│   ├── interim        <- Intermediate data that has been transformed.
-│   ├── processed      <- The final, canonical data sets for modeling.
-│   │   └── v3         <- The fixed data.
-│   │
-│   └── raw            <- The original, immutable data dump.
+├── data               <- https://drive.google.com/open?id=1I3z8NVTUHmsuCv1mtkwgr_mNwuqicIBv
+│   ├── artificial     <- Artificial data from Monte Carlo sampling
+│   └── processed      <- Real datasets
 │
 ├── notebooks          <- Jupyter notebooks.
 │
