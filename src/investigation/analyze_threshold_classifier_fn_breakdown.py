@@ -5,7 +5,7 @@ from src.visualization.visualize import *
 from sklearn.metrics import classification_report, confusion_matrix
 
 if __name__ == "__main__":
-    X, y, s = load_data('ARTIFICIAL_V6', stats=True)
+    X, y, s = load_data('ARTIFICIAL_V8', stats=True)
     print(s)
     model = ThresholdCutoffClassifier(14)
     y_pred = model.predict(X)
@@ -16,11 +16,11 @@ if __name__ == "__main__":
     i_fn_reg = []
     i_fn_decay = []
     for dp in dp['i_fn']:
-        if s['file_range']['./data/artificial/v6/dark_tags_by_trial_no_decay_MC.csv'][0] <= dp and \
-            dp <= s['file_range']['./data/artificial/v6/dark_tags_by_trial_no_decay_MC.csv'][1]:
+        if s['file_range']['./data/artificial/v8/dark_tags_by_trial_no_decay_MC.csv'][0] <= dp and \
+            dp <= s['file_range']['./data/artificial/v8/dark_tags_by_trial_no_decay_MC.csv'][1]:
             i_fn_reg.append(dp)
-        if s['file_range']['./data/artificial/v6/dark_tags_by_trial_with_decay_MC.csv'][0] <= dp and \
-            dp <= s['file_range']['./data/artificial/v6/dark_tags_by_trial_with_decay_MC.csv'][1]:
+        if s['file_range']['./data/artificial/v8/dark_tags_by_trial_with_decay_MC.csv'][0] <= dp and \
+            dp <= s['file_range']['./data/artificial/v8/dark_tags_by_trial_with_decay_MC.csv'][1]:
             i_fn_decay.append(dp)
 
     print('fn_reg: {}'.format(len(i_fn_reg)))
