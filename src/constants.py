@@ -73,7 +73,17 @@ QUBIT_DATASET = {
         "./data/artificial/v8/dark_tags_by_trial_no_decay_MC_1.csv",
         "./data/artificial/v8/dark_tags_by_trial_with_decay_MC_0.csv",
         "./data/artificial/v8/dark_tags_by_trial_with_decay_MC_1.csv"]
-    ]
+    ],
+    "ARTIFICIAL_V9": [ # No prep errors; 25% leak errors; bins=60
+        ["./data/artificial/v9/bright_tags_by_trial_MC.csv"],
+        ["./data/artificial/v9/dark_tags_by_trial_no_decay_MC.csv",
+        "./data/artificial/v9/dark_tags_by_trial_with_decay_MC.csv"]
+    ],
+    "ARTIFICIAL_V10": [ # No prep errors; 25% leak errors; bins=80
+        ["./data/artificial/v10/bright_tags_by_trial_MC.csv"],
+        ["./data/artificial/v10/dark_tags_by_trial_no_decay_MC.csv",
+        "./data/artificial/v10/dark_tags_by_trial_with_decay_MC.csv"]
+    ],
 }
 
 

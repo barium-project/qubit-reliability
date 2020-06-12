@@ -80,13 +80,18 @@ def visualize_individual_arrival_distribution(X, limit, first_arrival, last_arri
         fig, axs = plt.subplots(min(limit, len(X) - count), figsize=FIG_SIZE)
         fig.suptitle("Distribution of Photons' Arrival Times")
         for i in range(min(limit, len(X) - count)):
-            axs[i].set_xlabel("Time (s)")
-            axs[i].set_ylabel("Number of Photons")
-            axs[i].set_xticks(np.linspace(first_arrival, last_arrival, 20))
-            axs[i].set_yticks(np.linspace(0, 2, 3))
-            axs[i].label_outer()
+            if len(X) == 1:
+                ax = axs
+            else:
+                ax = axs[i]
 
-            axs[i].hist(X[count], bins=1000, range=(first_arrival, last_arrival))
+            ax.set_xlabel("Time (s)")
+            ax.set_ylabel("Number of Photons")
+            ax.set_xticks(np.linspace(first_arrival, last_arrival, 20))
+            ax.set_yticks(np.linspace(0, 2, 3))
+            ax.label_outer()
+
+            ax.hist(X[count], bins=1000, range=(first_arrival, last_arrival))
             count += 1
 
         if filename == None:
